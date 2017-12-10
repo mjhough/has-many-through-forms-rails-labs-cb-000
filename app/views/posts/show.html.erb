@@ -1,1 +1,37 @@
+<h1><%= @post.title %></h1>
+<ul>
+<% @post.categories.each do |category| %>
+    <li><%= category.name %></li>
+<% end %>
+</ul>
+<h2><%= @post.content %></h2>
+<br><br>
 
+<h2>Comments</h2>
+<%= form_for @comment do |f| %>
+    <%= f.text_area :content %>
+    <br>
+    <%= f.collection_select :user_id, User.all, :id, :username, include_blank: "Create New" %>
+    <br>
+    <h3>Create new user</h3>
+    <%= f.fields_for :user_attributes, @comment.user do |user_fields| %>
+        <%= user_fields.label :username %>
+        <%= user_fields.text_field :username %>
+    <% end %>
+    <br>
+    <%= f.hidden_field :post_id, value: @post.id %>
+    <%= f.submit :content, value: "Create Comment" %>
+<% end %>
+
+<br>
+
+<% @post.comments.reverse.each do |comment| %>
+    <p><strong><%= comment.user.username unless comment.user.nil? %></strong> says: <%= comment.content %><p>
+<% end %>
+
+<br>
+
+<h3>Users</h3>
+<% @post.users.uniq.each do |user| %>
+    <%= link_to user.username, user_path(user) %>
+<% end %>
